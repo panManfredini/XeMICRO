@@ -1,0 +1,4 @@
+
+# DO NOT DELETE
+./run10bck_c.so: /home/pan/root_v6.02.02/root-6.02.04/include/RVersion.h /home/pan/root_v6.02.02/root-6.02.04/include/RConfig.h /home/pan/root_v6.02.02/root-6.02.04/include/TClass.h /home/pan/root_v6.02.02/root-6.02.04/include/TDictAttributeMap.h /home/pan/root_v6.02.02/root-6.02.04/include/TInterpreter.h /home/pan/root_v6.02.02/root-6.02.04/include/TROOT.h /home/pan/root_v6.02.02/root-6.02.04/include/TBuffer.h /home/pan/root_v6.02.02/root-6.02.04/include/TMemberInspector.h /home/pan/root_v6.02.02/root-6.02.04/include/TError.h /home/pan/root_v6.02.02/root-6.02.04/include/RtypesImp.h /home/pan/root_v6.02.02/root-6.02.04/include/TIsAProxy.h /home/pan/root_v6.02.02/root-6.02.04/include/TFileMergeInfo.h /home/pan/root_v6.02.02/root-6.02.04/include/TCollectionProxyInfo.h
+run10bck_c__ROOTBUILDVERSION= 6.02/04
