@@ -1,0 +1,14 @@
+The bands are flattened using the ER mean
+
+TF1 *ebandflat = new TF1("ebandflat","pol9",2,50);
+ebandflat->SetParameters(2.66695+0.267047+0.00019154,-0.0960315-0.155731+0.000101306,0.00604496+0.0331754,-0.000200455-0.00357708,3.29415e-06+0.000222689,-2.10034e-08-8.49461e-06,2.01609e-07,-2.8995e-09,2.30693e-11,-7.76065e-14);
+
+which is used in a functional form via
+
+float er_mean(float x) {
+  return ebandflat->Eval(x);
+}
+
+The alias llCorr is defined as
+
+T2->SetAlias("llCorr","log10(cS2sTotBottom[0]/cS1sTot[0])-er_mean(cS1sTot[0])");

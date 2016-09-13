@@ -1,10 +1,18 @@
 {
+
+//--------------------  FOR BORIS:
+// This macro will produce a file with:
+// h_erModelTot    ---- run10 total ER model
+// h_erModelGauss  ---- run10 Gauss part
+// h_erModelLeak   ---- run10 Leakage part
+//
+
   float HighPE=30;
   float LowPE=3;
   int NPE=(HighPE-LowPE)/1.;
   float HighS1S2=1;
   float LowS1S2=-1;
-  int NS1S2=200;
+  int NS1S2=400;
   int Nbands=12;
   double R=0.0271;  
   TH2D *h_erdata=new TH2D("h_erdata","h2",HighPE-LowPE,LowPE,HighPE,NS1S2,LowS1S2,HighS1S2);		//fille with data from text file
@@ -17,6 +25,7 @@
   TH1F *gLeakageTop=new TH1F("gLeakageTop","Leakage top+bottom (All s1s2); S1 [pe] ; N events",HighPE-LowPE,LowPE,HighPE);
   TH1F *gLeakageBottom=new TH1F("gLeakageBottom","Leakage Bottom (s1s2<0); S1 [pe] ; N events",HighPE-LowPE,LowPE,HighPE);
   TH1F *gLeakageProfileS1S2=new TH1F("gLeakageProfileS1S2","Leakage events projection on Y; Flattenend S1S2; # events",NS1S2,LowS1S2,HighS1S2);
+
 
   TCanvas *c1=new TCanvas("c1","c1",1000,600);
 
@@ -85,8 +94,8 @@
     }
 
     // Count number of event outside the leakage limit
-    double dataTop = a->Integral(a->FindBin(par1+leakageLimit),a->FindBin(1));		//Ale:  This is sum of bin content, which should be multiplied by binwith to compare to below.
-    double modelTop = fgd->Integral(par1+leakageLimit,1)/S1S2Bin;  			//Ale:  This is number of events
+    double dataTop = a->Integral(a->FindBin(par1+leakageLimit),a->FindBin(1));		//Ale:  This is TH1F::Integral = sum of bin content = nEvents
+    double modelTop = fgd->Integral(par1+leakageLimit,1)/S1S2Bin;  			//Ale:  This is TF1::Integral = number of events * bin_width 
     //double modelTop = fgd->Integral(par1+leakageLimit,1);  				//Ale:  This is "real" Integral 
     double dataBottom = a->Integral(a->FindBin(-1),a->FindBin(par1-leakageLimit));
     double modelBottom = fgd->Integral(-1,par1-leakageLimit)/S1S2Bin;			//Ale
@@ -121,8 +130,8 @@
     for (float s1s2=-1; s1s2<1; s1s2=s1s2+S1S2Bin){
       int bin2=h_erModelng->FindBin(pe,s1s2);
 
-      //double Leak = gLeakageTop->GetFunction("expo")->Eval(pe)/NS1S2 * R;       // Ale 
-      double Leak = gLeakageTop->GetFunction("expo")->Eval(pe)*S1S2Bin * R;   // why times S1S2Bin??  // Ale
+      double Leak = gLeakageTop->GetFunction("expo")->Eval(pe)/NS1S2 * R;       // Ale 
+      //double Leak = gLeakageTop->GetFunction("expo")->Eval(pe)*S1S2Bin * R;   // why times S1S2Bin??  // Ale
       double Gauss= h_erModelg->GetBinContent(bin2);
       h_erModelng->SetBinContent(bin2,Leak);
       h_erModel->SetBinContent(bin2,Gauss+Leak);
@@ -147,7 +156,43 @@
   cout<<" from 3-30pe ER="<<h_erModel->Integral(x1,x2,y_1,y2)<<"   Out of which non gaus="<<h_erModelng->Integral(x1,x2,y_1,y2)<<endl;
 
   TFile *fout = new TFile ("ER_Background.run10.root","recreate");
-  h_erModel->Write("h_erModel");
+  h_erModel->Write("h_erModelTot");
+  h_erModelng->Write("h_erModelLeak");
+  h_erModelg->Write("h_erModelGaus");
+
+  //------------------- UNFLATTEN SPACE -------//
+    TF1 *eBandFlat_run10 = new TF1("ebandflat","exp(-0.513894-0.274465*x)+2.25458+0.0131485+(-0.0148529+-0.0166898)*x+ (0.000198616+0.00460857)*x**2-0.000523096*x**3+2.85031e-05*x**4-7.41271e-07*x**5+7.38937e-09*x**6",3.,50.);
+    TH2D *h_erModel_U    = new TH2D("h_erModel_U", "ER Model; S1 [pe]; log(s2/s1)", 50, 0., 50, 1200, -3.,3.);
+    TH2D *h_erModelg_U   = new TH2D("h_erModelg_U","Gaussian ER Model; S1 [pe]; log(s2/s1)",50, 0., 50, 1200, -3.,3.);
+    TH2D *h_erModelng_U  = new TH2D("h_erModelng_U","None Gaussian ER Model; S1 [pe]; log(s2/s1)",50, 0., 50, 1200, -3.,3.);
+
+    int nbinsX = h_erModel->GetNbinsX();    
+    int nbinsY = h_erModel->GetNbinsY();   
+
+    for(int x_itr = 1; x_itr <= nbinsX; x_itr++){
+	double  X = h_erModel->GetXaxis()->GetBinCenter(x_itr);
+	for(int y_itr = 1; y_itr <= nbinsY; y_itr++){
+		double  Y = h_erModel->GetYaxis()->GetBinCenter(y_itr) + eBandFlat_run10->Eval(X);
+		double content = h_erModel->GetBinContent(x_itr, y_itr);
+		double content_g = h_erModelg->GetBinContent(x_itr, y_itr);
+		double content_ng = h_erModelng->GetBinContent(x_itr, y_itr);
+		h_erModel_U->Fill(X, Y, content);		
+		h_erModelg_U->Fill(X, Y, content_g);		
+		h_erModelng_U->Fill(X, Y, content_ng);		
+	}
+    }  
+
+    //------------------------------------------//
+
+  h_erModel_U->Write("Run10_ER");
+  h_erModelg_U->Write("Run10_ERgauss");
+  h_erModelng_U->Write("Run10_ERleak");
+
   fout->Close();
+
+
+
+
+
 
 }

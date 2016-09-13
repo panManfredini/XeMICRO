@@ -8,10 +8,12 @@ TH2D *for_projection = new TH2D("for_projection","",1000,0.,1000., 1000,0.,20000
 
 s1_s2->Draw();
 
+// Line for cuts
 TF1 *lineTop = new TF1 ("lineTop","[0]*x + [1]",200.,550.);
 lineTop->SetParameter(0,-88.6);
 lineTop->SetParameter(1,104237. - 2000.);
 
+// Line for cuts
 TF1 *lineBot = new TF1 ("lineBot","[0]*x + [1]",200.,550.);
 lineBot->SetParameter(0,-98.2);
 lineBot->SetParameter(1,69809. + 5000.);
@@ -36,6 +38,9 @@ double mean_Y = 0.;
 double var_X = 0.;
 double var_Y = 0.;
 
+
+// The code needs to run twice... (It's ugly I know) one to get the mean value and other to calculate variance ecc...
+// so the capital letter MEAN_ are the precomputed ones...
 //double MEAN_x = 338.256;
 //double MEAN_y = 58087.3;
 double MEAN_x = 349.094;
@@ -43,7 +48,7 @@ double MEAN_y = 54702.8;
 double VAR_x  = 60.4357;
 double VAR_y =  7268.77;
 
-
+// compute mean, variance and covariance...
 while ( X <= 550. && X >= 200.) 
 	{
 	  x_itr++;
@@ -89,7 +94,7 @@ cout << "var Y " << var_Y << endl;
 cout << "covariance " << cov << endl;
 
 
-//----------------- replot ---//
+//----------------- replot all below here is just a test---//
 TRandom rand_gaus;
 
 TH2D *h = new TH2D("h","",1000,0.,1000., 1000,0.,200000.);
