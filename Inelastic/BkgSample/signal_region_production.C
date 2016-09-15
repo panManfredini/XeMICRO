@@ -1,6 +1,6 @@
 {
 
-  TFile *f = TFile::Open("final_merge.root");
+  TFile *f = TFile::Open("../DATA/final_merge.root");
 
   TH2D *ambe = (TH2D*)f->Get("s1_s2_AmBe");
   TH2D *co60 = (TH2D*)f->Get("s1_s2_Co60");
@@ -81,12 +81,21 @@
 				CR_ambe->SetBinContent(xbin,ybin,ambe->GetBinContent(xbin,ybin));
 				CR_co60->SetBinContent(xbin,ybin,co60->GetBinContent(xbin,ybin));
 				CR_dm->SetBinContent(xbin,ybin,dm->GetBinContent(xbin,ybin));
+
+				CR_ambe->SetBinError(xbin,ybin,ambe->GetBinError(xbin,ybin));
+				CR_co60->SetBinError(xbin,ybin,co60->GetBinError(xbin,ybin));
+				CR_dm->SetBinError(xbin,ybin,dm->GetBinError(xbin,ybin));
+
 				continue;
 			}
 			if(s1 >180. && s2 > 12000.) {
 				CR_ambe->SetBinContent(xbin,ybin,ambe->GetBinContent(xbin,ybin));
 				CR_co60->SetBinContent(xbin,ybin,co60->GetBinContent(xbin,ybin));
 				CR_dm->SetBinContent(xbin,ybin,dm->GetBinContent(xbin,ybin));
+
+				CR_ambe->SetBinError(xbin,ybin,ambe->GetBinError(xbin,ybin));
+				CR_co60->SetBinError(xbin,ybin,co60->GetBinError(xbin,ybin));
+				CR_dm->SetBinError(xbin,ybin,dm->GetBinError(xbin,ybin));
 				continue;
 			}
 
@@ -94,11 +103,22 @@
 				ambe_PL_SR->AddBinContent(16,ambe->GetBinContent(xbin,ybin));
 				co60_PL_SR->AddBinContent(16,co60->GetBinContent(xbin,ybin));
 				dm_PL_SR->AddBinContent(16,dm->GetBinContent(xbin,ybin));
+
+				double err_dm = sqrt(pow(dm_PL_SR->GetBinError(16),2) + pow(dm->GetBinError(xbin,ybin),2)) ;
+				double err_ambe = sqrt(pow(ambe_PL_SR->GetBinError(16),2) + pow(ambe->GetBinError(xbin,ybin),2)) ;
+				double err_co = sqrt(pow(co60_PL_SR->GetBinError(16),2) + pow(co60->GetBinError(xbin,ybin),2)) ;
+				ambe_PL_SR->SetBinError(16,err_ambe);
+				dm_PL_SR->SetBinError(16,err_dm);
+				co60_PL_SR->SetBinError(16,err_co);
 			}
 			else{
 				ambe_PL_SR->SetBinContent(bincounter,ambe->GetBinContent(xbin,ybin));
 				co60_PL_SR->SetBinContent(bincounter,co60->GetBinContent(xbin,ybin));
 				dm_PL_SR->SetBinContent(bincounter,dm->GetBinContent(xbin,ybin));
+
+				ambe_PL_SR->SetBinError(bincounter,ambe->GetBinError(xbin,ybin));
+				co60_PL_SR->SetBinError(bincounter,co60->GetBinError(xbin,ybin));
+				dm_PL_SR->SetBinError(bincounter,dm->GetBinError(xbin,ybin));
 		
 				bincounter++;	
 			}
@@ -109,6 +129,10 @@
 			CR_ambe->SetBinContent(xbin,ybin,ambe->GetBinContent(xbin,ybin));
 			CR_co60->SetBinContent(xbin,ybin,co60->GetBinContent(xbin,ybin));
 			CR_dm->SetBinContent(xbin,ybin,dm->GetBinContent(xbin,ybin));
+
+			CR_ambe->SetBinError(xbin,ybin,ambe->GetBinError(xbin,ybin));
+			CR_co60->SetBinError(xbin,ybin,co60->GetBinError(xbin,ybin));
+			CR_dm->SetBinError(xbin,ybin,dm->GetBinError(xbin,ybin));
 		}
 	}
  }
