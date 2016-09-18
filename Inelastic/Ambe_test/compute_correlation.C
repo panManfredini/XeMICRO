@@ -84,7 +84,7 @@ mean_Y = mean_Y / entries;
 var_X = sqrt(var_X / entries);
 var_Y = sqrt(var_Y / entries);
 
-cov = cov / entries / VAR_x / VAR_y;
+double correlation  = cov / entries / VAR_x / VAR_y;
 
 cout << "entries " << entries << endl;
 cout << "mean X " << mean_X << endl;
@@ -92,6 +92,7 @@ cout << "mean Y " << mean_Y << endl;
 cout << "var X " << var_X << endl;
 cout << "var Y " << var_Y << endl;
 cout << "covariance " << cov << endl;
+cout << "CORRELATION  " << correlation << endl;
 
 
 //----------------- replot all below here is just a test---//

@@ -1,7 +1,7 @@
 {
 
  ifstream in;
- in.open("mod_rcl_nr.dat");
+ in.open("mod_rcl_nr_more.dat");
 
  double temp =0.;
 
@@ -37,11 +37,11 @@
  	}
   
 
-  	cout << "Integral " << integral << "  VS  " << h_temp->Integral() << endl;
+  	cout << name + "Integral " << integral << "  VS  " << h_temp->Integral() << endl;
 
 	h_temp->Scale(aboundanceXe129);	
 
-  	cout << "Rate with abundance " << integral * aboundanceXe129 << "   VS " << h_temp->Integral()<< endl;
+  	cout << name + "Rate with abundance " << integral * aboundanceXe129 << "   VS " << h_temp->Integral()<< endl;
 
 	f.cd();
 	h_temp->Write();

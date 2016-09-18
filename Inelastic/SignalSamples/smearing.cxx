@@ -77,7 +77,9 @@ TH2D* smearing(TString massWimp = "50"){
 	//read Qy and Leff
 	TFile *f2 = new TFile("ligth_charge_yeld.root");
 	f2->GetObject("Qy_median;1",gQy);
-	f2->GetObject("Leff_median;1",gLeff);
+	//f2->GetObject("Leff_median;1",gLeff);
+	//f2->GetObject("Qy_upSigma;1",gQy);
+	f2->GetObject("Leff_upSigma;1",gLeff);
 	
 //	TCanvas *c1 = new TCanvas("Canvas", "Canvas", 1500,500);
 //	c1->Divide(3,2);
