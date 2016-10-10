@@ -9,30 +9,6 @@
 
 //parameters extracted from wiki Inelastic WIMP Scattering » Count based analysis » Signal region
 
-//nuclear recoil light emission
-const float l_y = 2.2;
-const float s_nr = 0.95;
-const float s_ee = 0.58;
-
-//charge emission
-const float y = 19.5;
-const float r = 0.4195;
-
-
-//40kev gamma parameters
-//double const rho = -0.75;
-double const rho = -0.50;
-double const mux = 107.0;
-double const muy = 8924.0;
-double const sigmax = 17.0;
-double const sigmay = 1312.0;
-
-
-//Qy and Leff: two Tgraphs read from inputparameter.root
-//redirect these two pointers to reasssign Qy and Leff
-TGraph *gQy;
-TGraph *gLeff;
-TGraph *gmedian,*glower,*gupper;
 
 double poisson(double k, double lambda);
 double gaussian(double x, double mu, double sigma);
@@ -50,12 +26,52 @@ int xbinm=300;
 int ybinm=200;
 
 
-TH2D* smearing(TString massWimp = "50"){
+TH2D* smearing(TString massWimp = "50", double t_ly = 0., double t_y = 0., double t_rho = 0., double t_leff = 0., double t_qy = 0.){
 
-        TH2D *hcomb = new TH2D("s1s2_mass_"+massWimp, "Combined 40keV gamma and nuclear recoil", xbinm,0.,300.,ybinm,0.,20000.);
-	TH2D *hcorr = new TH2D("hcorr_mass"+massWimp, "40 KeV gamma", xbinm,0,300,ybinm,0,20000);
-	TH1F *h2 = new TH1F("h2_mass_"+massWimp, "smeared dR/dcS1", cs1bin,0,300);
-	TH1F *h3 = new TH1F("h3_mass_"+massWimp, "smeared dR/dcS2", cs2bin,0,3000);
+	TString sysName  ="";
+	if(t_ly > 0) sysName.Append("_p_LY");
+	else if(t_ly < 0) sysName.Append("_m_LY");
+	else if(t_y  < 0) sysName.Append("_m_Y");
+	else if(t_y  > 0) sysName.Append("_p_Y");
+	else if(t_leff  < 0) sysName.Append("_m_leff");
+	else if(t_leff  > 0) sysName.Append("_p_leff");
+	else if(t_qy  < 0) sysName.Append("_m_qy");
+	else if(t_qy  > 0) sysName.Append("_p_qy");
+	else if(t_rho  < 0) sysName.Append("_m_rho");
+	else if(t_rho  > 0) sysName.Append("_p_rho");
+	
+
+	//nuclear recoil light emission
+	const float l_y  = 2.26 + t_ly * 0.04;  // LY @ 122 KeVee  
+	const float s_nr = 0.95;
+	const float s_ee = 0.58;
+
+	//charge emission
+	const float y = 8.27 + t_y * 0.26;  // Y bottom
+	const float r = 1.;
+
+
+	//40kev gamma parameters
+	double const rho = -0.45 + t_rho * 0.1;
+	double const mux = 107.0 + t_ly * 107.*0.02;       // 2% uncertainty on Ly
+	double const muy = 8924.0 + t_y * 8924.0 * 0.03 ;  // 3% uncertainty on Y bottom
+	double const sigmax = 17.0;
+	double const sigmay = 1312.0;
+
+
+	//Qy and Leff: two Tgraphs read from inputparameter.root
+	//redirect these two pointers to reasssign Qy and Leff
+	TGraph *gQy;
+	TGraph *gLeff;
+	TGraph *gmedian,*glower,*gupper;
+
+
+
+
+	TH2D *hcomb = new TH2D("s1s2_mass_"+massWimp+sysName, "Combined 40keV gamma and nuclear recoil", xbinm,0.,300.,ybinm,0.,20000.);
+	TH2D *hcorr = new TH2D("hcorr_mass"+massWimp+sysName, "40 KeV gamma", xbinm,0,300,ybinm,0,20000);
+	TH1F *h2 = new TH1F("h2_mass_"+massWimp+sysName, "smeared dR/dcS1", cs1bin,0,300);
+	TH1F *h3 = new TH1F("h3_mass_"+massWimp+sysName, "smeared dR/dcS2", cs2bin,0,3000);
 
 	//read the result of monte carlo simulation of nuclear recoil
 	TFile *f = new TFile("signalFile.root");
@@ -76,10 +92,13 @@ TH2D* smearing(TString massWimp = "50"){
 
 	//read Qy and Leff
 	TFile *f2 = new TFile("ligth_charge_yeld.root");
-	f2->GetObject("Qy_median;1",gQy);
-	//f2->GetObject("Leff_median;1",gLeff);
-	//f2->GetObject("Qy_upSigma;1",gQy);
-	f2->GetObject("Leff_upSigma;1",gLeff);
+	if(t_qy == 0) f2->GetObject("Qy_median;1",gQy);
+	else if(t_qy >  0) f2->GetObject("Qy_upSigma;1",gQy);
+	else if(t_qy <  0) f2->GetObject("Qy_lowSigma;1",gQy);
+
+	if(t_leff == 0.) f2->GetObject("Leff_median;1",gLeff);
+	if(t_leff > 0.)  f2->GetObject("Leff_upSigma;1",gLeff);
+	if(t_leff < 0.)  f2->GetObject("Leff_lowSigma;1",gLeff);
 	
 //	TCanvas *c1 = new TCanvas("Canvas", "Canvas", 1500,500);
 //	c1->Divide(3,2);
@@ -103,7 +122,7 @@ TH2D* smearing(TString massWimp = "50"){
 	int maxpe = 300;	//max no. of PE allowd in smearing - defines range of discrete poisson
 	int gaussianbins = 300;	//no. of bins in pdf for smearing
 
-	TH1F *h4 = new TH1F("h4_"+massWimp, "p_cS1", gaussianbins, 0 , 300);
+	TH1F *h4 = new TH1F("h4_"+massWimp+sysName, "p_cS1", gaussianbins, 0 , 300);
 	h4->SetXTitle("cS1");
 	h4->SetYTitle("Probability");
 
@@ -196,7 +215,7 @@ TH2D* smearing(TString massWimp = "50"){
 
 	//output all histograms
 	TFile *fout = new TFile("signal_s1_s2.root", "UPDATE");
-	hcomb->Write("s1s2_mass_"+massWimp);
+	hcomb->Write("s1s2_mass_"+massWimp+sysName);
 /*	hcorr->Write("fortyKeVGamma");
 	h4->Write("tmpPDF");
 	h3->Write("smearedS2");
