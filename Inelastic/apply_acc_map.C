@@ -1,15 +1,19 @@
 {
 
+
 gStyle->SetOptStat(0);
 TFile f_sit("fout.root");
-TFile f_acc("acceptance.root");
+TFile f_acc("acceptace_computation/acceptance.root");
 
-TFile f_standard("merged_acc.root");
+TFile f_standard("acceptace_computation/merged_acc.root");
+
+gROOT->ProcessLine(".L inelastic_style.C ");
 
 //TH2D *s1_s2 = (TH2D*)f_standard.Get("s1_s2_no_Inelastic_Xs2single0");
 TH2D *s1_s2 = (TH2D*)f_standard.Get("s1_s2");
 s1_s2->Rebin2D(4,4);
 
+gROOT->ProcessLine(".L inelastic_style.C ");
 
 TH2F *h_sit = (TH2F*)f_sit.Get("combined");
 h_sit->Rebin2D(4,4);
@@ -36,6 +40,7 @@ for(int x =1; x < h_sit->GetXaxis()->GetNbins(); x++){
 	
 }
 
+gROOT->ProcessLine(".L inelastic_style.C ");
 //new TCanvas();
 
 h_sit->SetContour(5);
@@ -74,8 +79,10 @@ with_acc->Scale(1./with_acc->Integral());
   data_2->Scale(1./data_2->Integral());
   data_3->Scale(1./data_3->Integral());
 
+gROOT->ProcessLine(".L inelastic_style.C ");
 
 c2->cd(2);
+gROOT->ProcessLine(".L inelastic_style.C ");
 model_1->SetLineColor(2);
 model_1->SetTitle("Slice 6000-8000 PE in S2"); 
 data_1->SetLineColor(1);
@@ -86,6 +93,7 @@ model_1->Draw("hist");
 data_1->Draw("esame");
 
 c2->cd(3);
+gROOT->ProcessLine(".L inelastic_style.C ");
 model_2->SetLineColor(2);
 model_2->SetTitle("Slice 8000-10000 PE in S2"); 
 data_2->SetLineColor(1);
@@ -96,6 +104,7 @@ model_2->Draw("hist");
 data_2->Draw("esame");
 
 c2->cd(4);
+gROOT->ProcessLine(".L inelastic_style.C ");
 model_3->SetLineColor(2);
 model_3->SetTitle("Slice 10000-12000 PE in S2"); 
 data_3->SetLineColor(1);
@@ -107,6 +116,7 @@ data_3->Draw("esame");
 
 c2->cd(1);
 
+gROOT->ProcessLine(".L inelastic_style.C ");
 s1_s2->GetXaxis()->SetRangeUser(60,200);
 s1_s2->Draw("cont2");
 with_acc->Draw("cont2 same");

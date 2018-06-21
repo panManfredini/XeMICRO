@@ -21,14 +21,18 @@ lineTop->Draw("same");
 lineBot->Draw("same");
 
 
-int Xstart = s1_s2->GetXaxis()->FindBin(200.);
-int Ystart = s1_s2->GetYaxis()->FindBin(lineBot->Eval(200.) );
+int Xstart = s1_s2->GetXaxis()->FindBin(80.);
+//int Xstart = s1_s2->GetXaxis()->FindBin(200.);
+int Ystart = s1_s2->GetYaxis()->FindBin(6000. );
+//int Ystart = s1_s2->GetYaxis()->FindBin(lineBot->Eval(200.) );
 
 int x_itr = Xstart;
 int y_itr = Ystart;
 
-double X = 200.;
-double Y = lineBot->Eval(200.);
+double X = 80.;
+//double X = 200.;
+double Y = 6000.;
+//double Y = lineBot->Eval(200.);
 
 double entries = 0;
 double cov =0;
@@ -43,13 +47,20 @@ double var_Y = 0.;
 // so the capital letter MEAN_ are the precomputed ones...
 //double MEAN_x = 338.256;
 //double MEAN_y = 58087.3;
-double MEAN_x = 349.094;
-double MEAN_y = 54702.8;
-double VAR_x  = 60.4357;
-double VAR_y =  7268.77;
+
+double MEAN_x = 116.596;   // 40KeV
+double MEAN_y = 9075.02;
+double VAR_x  = 16.7222;   //40KeV
+double VAR_y =  1212.45;
+
+//double MEAN_x = 349.094;  //164 KeV
+//double MEAN_y = 54702.8;
+//double VAR_x  = 60.4357;   //164KeV
+//double VAR_y =  7268.77;
 
 // compute mean, variance and covariance...
-while ( X <= 550. && X >= 200.) 
+while ( X <= 160. && X >= 80.) 
+//while ( X <= 550. && X >= 200.) 
 	{
 	  x_itr++;
 	  X = s1_s2->GetXaxis()->GetBinCenter(x_itr);
@@ -57,7 +68,8 @@ while ( X <= 550. && X >= 200.)
 	  y_itr = Ystart+1;
 	  Y = s1_s2->GetYaxis()->GetBinCenter(y_itr); 
 	  
-  	  while (Y <= lineTop->Eval(X) && Y >= lineBot->Eval(X) )
+  	  while (Y <= 12000. && Y >= 6000. )
+  	  //while (Y <= lineTop->Eval(X) && Y >= lineBot->Eval(X) )
 		{
 		  y_itr++;
 	  	  Y = s1_s2->GetYaxis()->GetBinCenter(y_itr);

@@ -52,8 +52,9 @@ TH2D* smearing(TString massWimp = "50", double t_ly = 0., double t_y = 0., doubl
 
 
 	//40kev gamma parameters
-	double const rho = -0.45 + t_rho * 0.1;
+	double const rho = -0.40 + t_rho * 0.1;
 	double const mux = 107.0 + t_ly * 107.*0.02;       // 2% uncertainty on Ly
+	//double const muy = 10213 + t_y * 10213 * 0.03 ;  // 3% uncertainty on Y bottom
 	double const muy = 8924.0 + t_y * 8924.0 * 0.03 ;  // 3% uncertainty on Y bottom
 	double const sigmax = 17.0;
 	double const sigmay = 1312.0;

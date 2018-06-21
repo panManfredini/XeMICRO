@@ -14,6 +14,8 @@
   int low_prj_y1 = CR_co60->GetYaxis()->FindBin(5000.);
   int low_prj_y2 = CR_co60->GetYaxis()->FindBin(7000.);
 
+  int s2_prj_x = CR_co60->GetXaxis()->FindBin(50.);
+
   int high_prj_y1 = CR_co60->GetYaxis()->FindBin(13000.);
   int high_prj_y2 = CR_co60->GetYaxis()->FindBin(17000.);
   
@@ -22,6 +24,9 @@
 
   TH1D *high_prj_co60 =  (TH1D*) CR_co60->ProjectionX("high_prj_co60",high_prj_y1,high_prj_y2);
   TH1D *high_prj_dm   =  (TH1D*) CR_dm->ProjectionX("high_prj_dm",high_prj_y1,high_prj_y2);
+
+  TH1D *s2_prj_dm   =  (TH1D*) CR_dm->ProjectionY("s2_prj_dm",s2_prj_x,s2_prj_x);
+  TH1D *s2_prj_co60 =  (TH1D*) CR_co60->ProjectionY("s2_prj_co60",s2_prj_x,s2_prj_x);
 
   cout << " CO60 low " << low_prj_co60->Integral() << "  DM low  " << low_prj_dm->Integral()  << "  tau = " << low_prj_dm->Integral() / low_prj_co60->Integral()<< endl;
   cout << " CO60 high " << high_prj_co60->Integral() << "  DM high  " << high_prj_dm->Integral()  << "  tau = " << high_prj_dm->Integral() / high_prj_co60->Integral()<< endl;
@@ -79,5 +84,17 @@
   high_prj_co60->Draw("hist");
   high_prj_dm->Draw("sameE");
 */
-  
+ new TCanvas();
+ s2_prj_co60->Scale(bkg_scale);
+ s2_prj_dm->Draw();
+ s2_prj_co60->Draw("sameHist");
+
+  TLegend* lego = new TLegend(0.2,0.9,0.5,0.7);
+  lego->SetTextSize(0.033);
+  lego->SetFillColor(0);
+  lego->SetBorderSize(0);
+  lego->AddEntry(s2_prj_dm,"Data");
+  lego->AddEntry(s2_prj_co60,"Normalized Calibration ^{60}Co");
+  lego->Draw();
+
 }

@@ -52,7 +52,7 @@
         sys_list.push_back(sd5);
  
 
-  TFile finallySignals("final_signals_test.root","RECREATE");
+  TFile finallySignals("final_signals_Ybott_rho04.root","RECREATE");
 
   for(unsigned int m=0; m< mass_list.size() ; m++){
   	for(unsigned int s=0; s< sys_list.size() ; s++){
@@ -71,13 +71,18 @@
 	cout <<"Mass " + mass_list[m] + " After Acc " << mass_100->Integral() << endl;
 
 //	mass_100->Draw("colz");
+	finallySignals.cd();
+	TString  stupidNameFor2D (mass_100->GetName());
+	stupidNameFor2D.Append("_2D");
+	mass_100->Write(stupidNameFor2D);
 
 	TH1D SR_mass100 (SR_cut(mass_100));
 
 	cout <<"Mass " + mass_list[m] + " AFTER SR  " << SR_mass100.Integral() << endl;
-
+	
 	finallySignals.cd();
 	SR_mass100.Write(TString(SR_mass100.GetName()));
+
 //	new TCanvas();
 //	SR_mass100.Draw();
       }
